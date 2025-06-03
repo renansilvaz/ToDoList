@@ -1,0 +1,22 @@
+spring:
+  application:
+    name=Gestao de Tarefas
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        default_schema: tarefas-database
+  generate-ddl: true
+  hibernate:
+    ddl-auto: validate
+  open-in-view: true
+
+  datasource:
+    url: jdbc:mysql://localhost:3307/tarefas-database?allowPublicKeyRetrieval=true&useSSL=false
+    username: tarefas
+    password: tarefas
+    drive-class-name: com.mysql.cj.jdbc.Driver
+
+  flyway:
+    enable: true
+    baseline-on-migrate: true
