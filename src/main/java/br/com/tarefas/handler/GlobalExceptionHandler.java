@@ -4,6 +4,7 @@ import br.com.tarefas.dto.ErroResponse;
 import br.com.tarefas.exception.ApiException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -20,6 +21,11 @@ public class GlobalExceptionHandler {
                 status.value()
         );
         return ResponseEntity.status(status).body(error);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErroResponse> handleValidationException(MethodArgumentNotValidException validException){
+        validException.getBindingResult().getFieldErrors().get(0).getDefaultMessage()
     }
 
     @ExceptionHandler(Exception.class)
