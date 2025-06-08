@@ -1,12 +1,16 @@
 package br.com.tarefas.handler;
 
 import br.com.tarefas.dto.ErroResponse;
+import br.com.tarefas.dto.ValidateError;
 import br.com.tarefas.exception.ApiException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -25,7 +29,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErroResponse> handleValidationException(MethodArgumentNotValidException validException){
-        validException.getBindingResult().getFieldErrors().get(0).getDefaultMessage()
+        List<ValidateError> errors = validException.getBindingResult().getFieldErrors().stream()
+                .map(fieldError -> new ValidateError(fieldError.getField(), fieldError.getDefaultMessage()))
+                .toList();
+        ErroResponse erroResponse = new ErroResponse(
+                "FIELD_VALIDATE_ERROR", "Existem não campos preenchidos corretamente",
+                HttpStatus.BAD_REQUEST.value(),
+                errors
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erroResponse);
     }
 
     @ExceptionHandler(Exception.class)
